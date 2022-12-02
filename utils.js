@@ -16,83 +16,69 @@ var MathEx = new function MathEx() {
 //////////////////file system utilities//////////////////////
 /////////////////////////////////////////////////////////////
 
-window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
-            
+window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+
 
 var callback_requestSuccess = undefined;
 var callback_requestFailed = undefined;
 var fileSystemEntry = undefined;
 
-function getLocalStorage(sizeInBytes, requestSuccess, requestFailed)
-{
+function getLocalStorage(sizeInBytes, requestSuccess, requestFailed) {
     callback_requestSuccess = requestSuccess;
     callback_requestFailed = requestFailed;
-    
+
     // Webkit quota request for persistant storage
-    window.webkitStorageInfo.requestQuota(PERSISTENT, sizeInBytes, successfulQuotaRequest,failedQuotaRequest);
+    window.webkitStorageInfo.requestQuota(PERSISTENT, sizeInBytes, successfulQuotaRequest, failedQuotaRequest);
 }
 
-function successfulQuotaRequest(grantedBytes)
-{
+function successfulQuotaRequest(grantedBytes) {
     window.requestFileSystem(PERSISTENT, grantedBytes, successfulFileSystemCreated, failedFileSystemCreation);
 }
 
-function failedQuotaRequest(errorCode)
-{
+function failedQuotaRequest(errorCode) {
     if (callback_requestFailed !== undefined) callback_requestFailed(errorCode);
 }
 
-function successfulFileSystemCreated(fileSystem)
-{
+function successfulFileSystemCreated(fileSystem) {
     fileSystemEntry = fileSystem;
     if (callback_requestSuccess !== undefined) callback_requestSuccess(fileSystem);
-    
+
 }
 
-function failedFileSystemCreation(errorCode)
-{
+function failedFileSystemCreation(errorCode) {
     if (callback_requestFailed !== undefined) callback_requestFailed(errorCode);
 }
 
 
 
-function readFile(filename, readSuccess, readError)
-{
+function readFile(filename, readSuccess, readError) {
     if (fileSystemEntry === undefined) debugger;
-    
-    fileSystemEntry.root.getFile(filename, {}, function(fileEntry)
-    {
-        fileEntry.file(function(file)
-        {
+
+    fileSystemEntry.root.getFile(filename, {}, function (fileEntry) {
+        fileEntry.file(function (file) {
             var reader = new FileReader();
-            reader.onload = function(evt)
-            {
+            reader.onload = function (evt) {
                 readSuccess(evt, this);
             };
             reader.readAsArrayBuffer(file);
-        });   
-    }, readError);  
+        });
+    }, readError);
 }
 
-function writeFile(filename, writeFunction, writeError)
-{
+function writeFile(filename, writeFunction, writeError) {
     if (fileSystemEntry === undefined) debugger;
-    
-    var writeFunc = function()
-    {
-        var file = fileSystemEntry.root.getFile(filename, {create: true}, function(fileEntry)
-        {
+
+    var writeFunc = function () {
+        var file = fileSystemEntry.root.getFile(filename, { create: true }, function (fileEntry) {
             var writer = fileEntry.createWriter(writeFunction);
         }, writeError);
     };
-    
+
     removeFile(filename, writeFunc, writeFunc);
 }
 
-function removeFile(filename, removeCallback, removeError)
-{
-    fileSystemEntry.root.getFile(filename, {create: false}, function(fileEntry)
-    {
+function removeFile(filename, removeCallback, removeError) {
+    fileSystemEntry.root.getFile(filename, { create: false }, function (fileEntry) {
         fileEntry.remove(removeCallback, removeError);
     }, removeError);
 }

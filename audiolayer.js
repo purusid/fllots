@@ -1211,7 +1211,7 @@ function AudioPlayback() {
         var firstSplitStart = position;
         var firstSplitEnd = (position + len > dataReference.length) ?
             dataReference.length : (position + len > endPosition) ?
-            endPosition : (position + len);
+                endPosition : (position + len);
 
         var firstSplitLen = firstSplitEnd - firstSplitStart;
 
@@ -1424,7 +1424,7 @@ function audioLayerControl(elementContext) {
         var start = this.listOfSequenceEditors[0].selectionStart;
         start = (start < 0) ? 0 :
             (start > this.listOfSequenceEditors[0].audioSequenceReference.data.length - 1024) ?
-            this.listOfSequenceEditors[0].audioSequenceReference.data.length - 1024 : start;
+                this.listOfSequenceEditors[0].audioSequenceReference.data.length - 1024 : start;
 
         var len = ((this.listOfSequenceEditors[0].selectionEnd > dataLength) ? dataLength : this.listOfSequenceEditors[0].selectionEnd) - start;
 
